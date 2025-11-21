@@ -25,73 +25,86 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  FormGenerator formGenerator = FormGenerator();
+  FormGenerator formGenerator = FormGenerator(
+    headers: {
+      'Authorization': 'Bearer token123',
+      'Custom-Header': 'value',
+    },
+    onSuccess: (values) {
+      print('Form submitted successfully with values: $values');
+      // Navigate to another screen, show dialog, etc.
+    },
+  );
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: Center(
-        child: formGenerator.generateForm( {
-          "type": "form",
-          "title": "User Registration",
-          "fields": [
-            {
-              "type": "text_input",
-              "name": "full_name",
-              "label": "Full Name",
-              "placeholder": "Enter your full name",
-              "required": true,
-              "maxLength": 50
-            },
-            {
-              "type": "email_input",
-              "name": "email",
-              "label": "Email Address",
-              "placeholder": "example@mail.com",
-              "required": true,
-              "validation": {
-                "regex": "^[\\w.-]+@[\\w.-]+\\.\\w{2,}",
-                "error_message": "Enter a valid email"
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: formGenerator.generateForm( {
+            "type": "form",
+            "title": "User Registration",
+            "fields": [
+              {
+                "type": "text_input",
+                "name": "full_name",
+                "label": "Full Name",
+                "placeholder": "Enter your full name",
+                "required": true,
+                "maxLength": 50
+              },
+              {
+                "type": "email_input",
+                "name": "email",
+                "label": "Email Address",
+                "placeholder": "example@mail.com",
+                "required": true,
+                "validation": {
+                  "regex": "^[\\w.-]+@[\\w.-]+\\.\\w{2,}",
+                  "error_message": "Enter a valid email"
+                }
+              },
+              {
+                "type": "number_input",
+                "name": "age",
+                "label": "Age",
+                "placeholder": "18",
+                "required": true,
+                "min": 18,
+                "max": 100
+              },
+              {
+                "type": "dropdown",
+                "name": "gender",
+                "label": "Gender",
+                "options": [
+                  { "label": "Male", "value": "male" },
+                  { "label": "Female", "value": "female" },
+                  { "label": "Other", "value": "other" }
+                ],
+                "required": true
+              },
+              {
+                "type": "checkbox",
+                "name": "terms",
+                "label": "I agree to the Terms & Conditions",
+                "required": true
               }
-            },
-            {
-              "type": "number_input",
-              "name": "age",
-              "label": "Age",
-              "placeholder": "18",
-              "required": true,
-              "min": 18,
-              "max": 100
-            },
-            {
-              "type": "dropdown",
-              "name": "gender",
-              "label": "Gender",
-              "options": [
-                { "label": "Male", "value": "male" },
-                { "label": "Female", "value": "female" },
-                { "label": "Other", "value": "other" }
-              ],
-              "required": true
-            },
-            {
-              "type": "checkbox",
-              "name": "terms",
-              "label": "I agree to the Terms & Conditions",
-              "required": true
-            }
-          ],
-          "submit": {
-            "type": "button",
-            "label": "Register",
-            "action": {
-              "type": "api_call",
-              "method": "POST",
-              "url": "https://api.example.com/register",
-              "success_message": "Registration successful",
-              "error_message": "Registration failed"
+            ],
+            "submit": {
+              "type": "button",
+              "label": "Register",
+              "action": {
+                "type": "api_call",
+                "method": "POST",
+                "url": "https://api.example.com/register",
+                "success_message": "Registration successful",
+                "error_message": "Registration failed"
+              }
             }
           }
-        }
+          ),
         ),
       ),
     );
