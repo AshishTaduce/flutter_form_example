@@ -30,10 +30,6 @@ class _MyHomePageState extends State<MyHomePage> {
       'Authorization': 'Bearer token123',
       'Custom-Header': 'value',
     },
-    onSuccess: (values) {
-      print('Form submitted successfully with values: $values');
-      // Navigate to another screen, show dialog, etc.
-    },
   );
   @override
   Widget build(BuildContext context) {
@@ -103,7 +99,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 "error_message": "Registration failed"
               }
             }
-          }
+          },
+            onSuccess: (values) {
+              print(values);
+            },
           ),
         ),
       ),
