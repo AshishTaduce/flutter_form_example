@@ -22,10 +22,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  FormGenerator formGenerator = FormGenerator(
-    headers: {'Authorization': 'Bearer token123', 'Custom-Header': 'value'},
-  );
-
   Widget getFormWrapper(Widget child, {String? title}) {
     return Scaffold(
       appBar: AppBar(
@@ -59,8 +55,8 @@ class _MyHomePageState extends State<MyHomePage> {
       context,
       MaterialPageRoute(
         builder: (context) => getFormWrapper(
-          formGenerator.generateForm(
-            formData,
+          FormGenerator(
+            formData: formData,
             onSuccess: (values) {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
@@ -71,6 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   duration: const Duration(seconds: 3),
                 ),
               );
+              print("Submitted Values: $values");
             },
           ),
           title: title,
@@ -98,41 +95,73 @@ class _MyHomePageState extends State<MyHomePage> {
               ElevatedButton(
                 onPressed: () => _showForm(
                   {
-                    "type": "form",
-                    "title": "User Registration",
+                    "title": "Comprehensive Test Form",
                     "fields": [
-                      {
-                        "type": "text_input",
-                        "name": "full_name",
-                        "label": "Full Name",
-                        "placeholder": "Enter your full name",
-                        "required": true,
-                        "maxLength": 50,
-                      },
-                      {
-                        "type": "email_input",
-                        "name": "email",
-                        "label": "Email Address",
-                        "placeholder": "example@mail.com",
-                        "required": true,
-                        "validations": [
-                          {
-                            "regex": "^[\\w.-]+@[\\w.-]+\\.\\w{2,}",
-                            "error_message": "Enter a valid email",
-                          },
-                        ],
-                      },
-                      {
-                        "type": "number_input",
-                        "name": "age",
-                        "label": "Age",
-                        "placeholder": "18",
-                        "required": true,
-                        "min": 18,
-                        "max": 100,
-                      },
+                      // Row 1: Name and Email
+                      [
+                        {
+                          "type": "text_input",
+                          "name": "full_name",
+                          "label": "Full Name",
+                          "required": true,
+                          "tooltip": "Enter your legal name",
+                        },
+                        {
+                          "type": "email_input",
+                          "name": "email",
+                          "label": "Email",
+                          "required": true,
+                        }
+                      ],
+                      // Row 2: Date and Time
+                      [
+                        {
+                          "type": "date",
+                          "name": "dob",
+                          "label": "Date of Birth",
+                          "required": true,
+                        },
+                        {
+                          "type": "time",
+                          "name": "slot",
+                          "label": "Preferred Time",
+                          "required": true,
+                        }
+                      ],
+                      // Row 3: Country (Searchable Dropdown)
                       {
                         "type": "dropdown",
+                        "name": "country",
+                        "label": "Country",
+                        "options": [
+                          {"label": "United States", "value": "USA"},
+                          {"label": "India", "value": "IND"},
+                          {"label": "Canada", "value": "CAN"},
+                          {"label": "United Kingdom", "value": "UK"},
+                        ],
+                        "required": true,
+                        "isSearchable": true,
+                        "hint": "Select your country of residence",
+                      },
+                      // Row 4: State (Dependent on Country == USA)
+                      {
+                        "type": "dropdown",
+                        "name": "state",
+                        "label": "State",
+                        "options": [
+                          {"label": "California", "value": "CA"},
+                          {"label": "New York", "value": "NY"},
+                          {"label": "Texas", "value": "TX"},
+                        ],
+                        "enabledIf": {
+                          "field": "country",
+                          "operator": "==",
+                          "value": "USA"
+                        }
+                      },
+                      // Row 5: Gender (Radio)
+                      {
+                        "type": "radio",
                         "name": "gender",
                         "label": "Gender",
                         "options": [
@@ -142,226 +171,36 @@ class _MyHomePageState extends State<MyHomePage> {
                         ],
                         "required": true,
                       },
+                      // Row 6: Resume (File)
+                      {
+                        "type": "file",
+                        "name": "resume",
+                        "label": "Upload Resume",
+                        "required": true,
+                      },
+                      // Row 7: Terms (Checkbox)
                       {
                         "type": "checkbox",
                         "name": "terms",
-                        "label": "I agree to the Terms & Conditions",
+                        "label": "I agree to Terms",
                         "required": true,
-                      },
+                      }
                     ],
                     "submit": {
-                      "type": "button",
                       "label": "Register",
                       "action": {
                         "type": "api_call",
                         "method": "POST",
-                        "url": "https://jsonplaceholder.typicode.com/users",
-                        "success_message": "Registration successful",
-                        "error_message": "Registration failed",
-                      },
+                        "url": "https://jsonplaceholder.typicode.com/posts",
+                        "success_message": "Form Submitted!",
+                      }
                     },
                     "reset": true,
                   },
-                  "User Registration",
-                  successMessage: "Registration successful",
+                  "Test Form",
                 ),
-                child: const Text("User Registration Form"),
+                child: const Text("Test New Features"),
               ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => _showForm(
-                  {
-                    "type": "form",
-                    "title": "Login",
-                    "fields": [
-                      {
-                        "type": "email_input",
-                        "name": "email",
-                        "label": "Email Address",
-                        "placeholder": "example@mail.com",
-                        "required": true,
-                      },
-                      {
-                        "type": "password_input",
-                        "name": "password",
-                        "label": "Password",
-                        "placeholder": "Enter a strong password",
-                        "required": true,
-                        "minLength": 8,
-                        "validations": [
-                          {
-                            "regex": "^.{8,}\$",
-                            "error_message":
-                                "Password must be at least 8 characters long",
-                          },
-                          {
-                            "regex": "^(?=.*[A-Z]).*\$",
-                            "error_message":
-                                "Password must contain at least one uppercase letter",
-                          },
-                          {
-                            "regex": "^(?=.*[a-z]).*\$",
-                            "error_message":
-                                "Password must contain at least one lowercase letter",
-                          },
-                          {
-                            "regex": "^(?=.*\\d).*\$",
-                            "error_message":
-                                "Password must contain at least one digit",
-                          },
-                          {
-                            "regex":
-                                "^(?=.*[!@#\$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?~]).*\$",
-                            "error_message":
-                                "Password must contain at least one special character",
-                          },
-                        ],
-                      },
-                      {
-                        "type": "checkbox",
-                        "name": "remember_me",
-                        "label": "Remember me",
-                        "required": false,
-                      },
-                    ],
-                    "submit": {
-                      "type": "button",
-                      "label": "Login",
-                      "action": {
-                        "type": "api_call",
-                        "method": "POST",
-                        "url": "https://jsonplaceholder.typicode.com/posts",
-                        "success_message": "Login successful",
-                        "error_message": "Login failed",
-                      },
-                    },
-                  },
-                  "Login Form",
-                  successMessage: "Login successful",
-                ),
-                child: const Text("Login Form"),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => _showForm(
-                  {
-                    "type": "form",
-                    "title": "Contact Us",
-                    "fields": [
-                      {
-                        "type": "text_input",
-                        "name": "name",
-                        "label": "Your Name",
-                        "placeholder": "Enter your name",
-                        "required": true,
-                        "maxLength": 100,
-                      },
-                      {
-                        "type": "email_input",
-                        "name": "email",
-                        "label": "Email Address",
-                        "placeholder": "example@mail.com",
-                        "required": true,
-                      },
-                      {
-                        "type": "text_area",
-                        "name": "message",
-                        "label": "Message",
-                        "placeholder": "Tell us how we can help you...",
-                        "required": true,
-                        "minLength": 10,
-                        "maxLength": 500,
-                      },
-                      {
-                        "type": "dropdown",
-                        "name": "category",
-                        "label": "Category",
-                        "options": [
-                          {"label": "Support", "value": "support"},
-                          {"label": "Feedback", "value": "feedback"},
-                          {"label": "General Inquiry", "value": "inquiry"},
-                        ],
-                        "required": true,
-                      },
-                    ],
-                    "submit": {
-                      "type": "button",
-                      "label": "Send Message",
-                      "action": {
-                        "type": "api_call",
-                        "method": "POST",
-                        "url": "https://jsonplaceholder.typicode.com/posts",
-                        "success_message": "Message sent successfully",
-                        "error_message": "Failed to send message",
-                      },
-                    },
-                    "reset": true,
-                  },
-                  "Contact Form",
-                  successMessage: "Message sent successfully",
-                ),
-                child: const Text("Contact Form"),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => _showForm(
-                  {
-                    "type": "form",
-                    "title": "Product Feedback",
-                    "fields": [
-                      {
-                        "type": "number_input",
-                        "name": "rating",
-                        "label": "Rating (1-5)",
-                        "placeholder": "5",
-                        "required": true,
-                        "min": 1,
-                        "max": 5,
-                      },
-                      {
-                        "type": "text_area",
-                        "name": "comments",
-                        "label": "Comments",
-                        "placeholder": "Share your thoughts...",
-                        "required": false,
-                        "maxLength": 300,
-                      },
-                      {
-                        "type": "dropdown",
-                        "name": "product",
-                        "label": "Product",
-                        "options": [
-                          {"label": "App", "value": "app"},
-                          {"label": "Website", "value": "website"},
-                          {"label": "Service", "value": "service"},
-                        ],
-                        "required": true,
-                      },
-                      {
-                        "type": "checkbox",
-                        "name": "anonymous",
-                        "label": "Submit anonymously",
-                        "required": false,
-                      },
-                    ],
-                    "submit": {
-                      "type": "button",
-                      "label": "Submit Feedback",
-                      "action": {
-                        "type": "api_call",
-                        "method": "POST",
-                        "url": "https://jsonplaceholder.typicode.com/posts",
-                        "success_message": "Feedback submitted",
-                        "error_message": "Failed to submit feedback",
-                      },
-                    },
-                  },
-                  "Feedback Form",
-                  successMessage: "Feedback submitted successfully",
-                ),
-                child: const Text("Feedback Form"),
-              ),
-              const SizedBox(height: 20),
             ],
           ),
         ),
